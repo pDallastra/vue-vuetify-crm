@@ -2,6 +2,7 @@
     <v-navigation-drawer
       v-model="drawer"
       app
+      color="red darken-1 white--text"
     >
       <!--  -->
     </v-navigation-drawer>

@@ -9,7 +9,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>My CRUD</v-toolbar-title>
+        <v-toolbar-title>Quote</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -22,13 +22,17 @@
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
-              color="primary"
+              class="mx-2"
+              fab
               dark
-              class="mb-2"
+              small
+              color="primary"
               v-bind="attrs"
               v-on="on"
             >
-              New Item
+              <v-icon dark>
+                mdi-plus
+              </v-icon>
             </v-btn>
           </template>
           <v-card>
@@ -135,9 +139,16 @@
       </v-icon>
       <v-icon
         small
+        class="mr-2"
         @click="deleteItem(item)"
       >
         mdi-delete
+      </v-icon>
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-airplane
       </v-icon>
     </template>
     <template v-slot:no-data>
