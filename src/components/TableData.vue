@@ -1,7 +1,8 @@
 <template>
-  <v-data-table
+  <div class="pa-4">
+    <v-data-table
     :headers="headers"
-    :items="desserts"
+    :items="quotes"
     sort-by="calories"
     class="elevation-1"
   >
@@ -9,12 +10,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Quote</v-toolbar-title>
-        <v-divider
-          class="mx-4"
-          inset
-          vertical
-        ></v-divider>
+        <v-toolbar-title>Cutomers</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-dialog
           v-model="dialog"
@@ -36,7 +32,9 @@
             </v-btn>
           </template>
 
-          <CreateOrderCard 
+          <CreateCustomerCard 
+            :form-title="formTitle"
+            :lastQuoteNumber="quotes[quotes.length -1].quote"
             @save="save"
             @cancel="close"
           />
@@ -85,16 +83,18 @@
       </v-btn>
     </template>
   </v-data-table>
+  </div>
+
 </template>
 
 <script>
-import CreateOrderCard from './FormCardsContent/CreateOrderCard.vue';
+import CreateCustomerCard from './FormCardsContent/CreateCustomerCard.vue';
 
 export default {
   name: 'TableDate',
 
   components: {
-    CreateOrderCard
+    CreateCustomerCard
   },
 
   data: () => ({
@@ -102,30 +102,30 @@ export default {
       dialogDelete: false,
       headers: [
         {
-          text: 'Dessert (100g serving)',
+          text: 'Quote',
           align: 'start',
-          value: 'name',
+          value: 'quote',
         },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' },
-        { text: 'Protein (g)', value: 'protein' },
+        { text: 'Customer', value: 'customer' },
+        { text: 'Items', value: 'items' },
+        { text: 'Price', value: 'price' },
+        { text: 'Seller', value: 'seller' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      desserts: [],
+      quotes: [],
       editedIndex: -1,
       defaultItem: {
-        name: '',
-        calories: 0,
-        fat: 0,
-        carbs: 0,
-        protein: 0,
+        quote: '',
+        customer: '',
+        items: 0,
+        price: 0,
+        seller: 0,
       },
     }),
 
     computed: {
       formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+        return this.editedIndex === -1 ? 'New Customer' : 'Edit Customer'
       },
     },
 
@@ -144,94 +144,66 @@ export default {
 
     methods: {
       initialize () {
-        this.desserts = [
+        this.quotes = [
           {
-            name: 'Frozen Yogurt',
-            calories: 159,
-            fat: 6.0,
-            carbs: 24,
-            protein: 4.0,
+            quote: '0001',
+            customer: 'Apple',
+            items: 10,
+            price: 3750,
+            seller: 'Rogerio Souza'
           },
           {
-            name: 'Ice cream sandwich',
-            calories: 237,
-            fat: 9.0,
-            carbs: 37,
-            protein: 4.3,
+            quote: '0002',
+            customer: 'Samsung',
+            items: 7,
+            price: 12750.73,
+            seller: 'Rogerio Souza'
           },
           {
-            name: 'Eclair',
-            calories: 262,
-            fat: 16.0,
-            carbs: 23,
-            protein: 6.0,
+            quote: '0003',
+            customer: 'Microsoft',
+            items: 17,
+            price: 55482.49,
+            seller: 'Rogerio Souza'
           },
           {
-            name: 'Cupcake',
-            calories: 305,
-            fat: 3.7,
-            carbs: 67,
-            protein: 4.3,
+            quote: '0004',
+            customer: 'Tesla',
+            items: 23,
+            price: 107482.89,
+            seller: 'Fernanda Motta'
           },
           {
-            name: 'Gingerbread',
-            calories: 356,
-            fat: 16.0,
-            carbs: 49,
-            protein: 3.9,
+            quote: '0005',
+            customer: 'Facebook',
+            items: 4,
+            price: 14482.49,
+            seller: 'Fernanda Motta'
           },
           {
-            name: 'Jelly bean',
-            calories: 375,
-            fat: 0.0,
-            carbs: 94,
-            protein: 0.0,
-          },
-          {
-            name: 'Lollipop',
-            calories: 392,
-            fat: 0.2,
-            carbs: 98,
-            protein: 0,
-          },
-          {
-            name: 'Honeycomb',
-            calories: 408,
-            fat: 3.2,
-            carbs: 87,
-            protein: 6.5,
-          },
-          {
-            name: 'Donut',
-            calories: 452,
-            fat: 25.0,
-            carbs: 51,
-            protein: 4.9,
-          },
-          {
-            name: 'KitKat',
-            calories: 518,
-            fat: 26.0,
-            carbs: 65,
-            protein: 7,
-          },
+            quote: '0006',
+            customer: 'Microsoft',
+            items: 12,
+            price: 97532.49,
+            seller: 'Fernanda Motta'
+          }
         ]
       },
 
       editItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
+        this.editedIndex = this.quotes.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
 
       deleteItem (item) {
-        this.editedIndex = this.desserts.indexOf(item)
+        this.editedIndex = this.quotes.indexOf(item)
         this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
       },
 
       deleteItemConfirm () {
-        this.desserts.splice(this.editedIndex, 1)
+        this.quotes.splice(this.editedIndex, 1)
         this.closeDelete()
       },
 
@@ -251,11 +223,11 @@ export default {
         })
       },
 
-      save () {
+      save (quote) {
         if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
+          Object.assign(this.quotes[this.editedIndex], quote)
         } else {
-          this.desserts.push(this.editedItem)
+          this.quotes.push(quote)
         }
         this.close()
       },
