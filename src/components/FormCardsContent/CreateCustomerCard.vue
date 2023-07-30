@@ -9,45 +9,57 @@
                 <v-row>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="6"
+                    sm="12"
+                    md="12"
                   >
-                    <v-text-field
-                      v-model="quote.customer"
-                      label="Customer"
-                    ></v-text-field>
+                  <v-select
+                    v-model="quote.customer"
+                    :items="customers"
+                    density="customer"
+                    label="Customer"
+                  ></v-select>
                   </v-col>
                   <v-col
                     cols="12"
                     sm="6"
                     md="6"
                   >
-                    <v-text-field
-                      v-model="quote.items"
-                      label="Items"
-                      type="number"
-                    ></v-text-field>
+                  <v-select
+                    v-model="quote.seller"
+                    :items="sellers"
+                    density="seller"
+                    label="Seller"
+                  ></v-select>
                   </v-col>
                   <v-col
                     cols="12"
                     sm="6"
-                    md="4"
+                    md="6"
                   >
-                    <v-text-field
-                      v-model="quote.price"
-                      label="Price"
-                      type="number"
-                    ></v-text-field>
+                  <v-text-field
+                    v-model="quote.items"
+                    label="Items"
+                    type="number"
+                  />
                   </v-col>
-                  <v-col
+                </v-row>
+
+                <v-row
+                  v-if="quote.items.length"
+                >
+                <v-col
+                    v-for="index in Number(quote.items)"
+                    :key="index"
                     cols="12"
-                    sm="6"
-                    md="4"
+                    sm="12"
+                    md="12"
                   >
-                    <v-text-field
-                      v-model="quote.seller"
-                      label="Seller"
-                    ></v-text-field>
+                  <v-select
+                    v-model="quote.item[index]"
+                    :items="customers"
+                    density="customer"
+                    label="Customer"
+                  ></v-select>
                   </v-col>
                 </v-row>
               </v-container>
@@ -78,12 +90,24 @@ export default {
   name: 'CreateCustomerCard',
 
   data: () => ({
+    closingModal: false,
+    customers: [
+      { text: 'Apple', id: 1}, 
+      { text: 'Microsoft', id: 2}, 
+      { text: 'Samsung', id: 3},
+    ],
+    sellers: [
+      { text: 'Rogério Souza', id: 1}, 
+      { text: 'Fernanda Motta', id: 2}, 
+      { text: 'Paulo Dallastra', id: 3},
+    ],
     quote: {
       quote: '',
       customer: '',
       items: 0,
       price: 0,
       seller: '',
+      item: []
     },
     defaultReset: {
       quote: '',
@@ -101,8 +125,20 @@ export default {
     },
 
     lastQuoteNumber: {
-      type: Number,
+      type: [Number, String],
       default: 0
+    }
+  },
+
+  watch: {
+    'quote.items': {
+      handler(newValue, oldValue) {
+        if (oldValue > newValue && this.closingModal) {
+          this.quote.item[this.quote.item.length - 1] = null;
+        }
+
+        console.log(this.quote)
+      }
     }
   },
 
@@ -111,11 +147,13 @@ export default {
       const lastQuoteAsNumber = Number(this.lastQuoteNumber);
       this.quote.quote = String(lastQuoteAsNumber + 1).padStart(4, '0');
       this.$emit('save', this.quote);
+      this.closingModal = true;
       this.quote  = this.defaultReset;
-
     },
 
     close() {
+      this.closingModal = true;
+      this.quote = this.defaultReset;
       this.$emit('cancel');
     }
   }
