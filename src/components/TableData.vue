@@ -5,12 +5,13 @@
     :items="quotes"
     sort-by="calories"
     class="elevation-1"
+    @click:row="clickTest"
   >
     <template v-slot:top>
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Cutomers</v-toolbar-title>
+        <v-toolbar-title>Quotes</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-dialog
           v-model="dialog"
@@ -71,8 +72,11 @@
         small
         @click="deleteItem(item)"
       >
-        mdi-airplane
+        mdi-send
       </v-icon>
+    </template>
+    <template v-slot:[`item.price`]="{ item }">
+      {{ currencyPrice(item.price) }}
     </template>
     <template v-slot:no-data>
       <v-btn
@@ -107,7 +111,7 @@ export default {
           value: 'quote',
         },
         { text: 'Customer', value: 'customer' },
-        { text: 'Items', value: 'items' },
+        { text: 'Items', value: 'amountItems' },
         { text: 'Price', value: 'price' },
         { text: 'Seller', value: 'seller' },
         { text: 'Actions', value: 'actions', sortable: false },
@@ -117,7 +121,7 @@ export default {
       defaultItem: {
         quote: '',
         customer: '',
-        items: 0,
+        amountItems: 0,
         price: 0,
         seller: 0,
       },
@@ -143,47 +147,55 @@ export default {
     },
 
     methods: {
+      clickTest(data) {
+        console.log(data);
+      },
+
+      currencyPrice(price) {
+        return price.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'});
+      },
+
       initialize () {
         this.quotes = [
           {
             quote: '0001',
             customer: 'Apple',
-            items: 10,
+            amountItems: 10,
             price: 3750,
             seller: 'Rogerio Souza'
           },
           {
             quote: '0002',
             customer: 'Samsung',
-            items: 7,
+            amountItems: 7,
             price: 12750.73,
             seller: 'Rogerio Souza'
           },
           {
             quote: '0003',
             customer: 'Microsoft',
-            items: 17,
+            amountItems: 17,
             price: 55482.49,
             seller: 'Rogerio Souza'
           },
           {
             quote: '0004',
             customer: 'Tesla',
-            items: 23,
+            amountItems: 23,
             price: 107482.89,
             seller: 'Fernanda Motta'
           },
           {
             quote: '0005',
             customer: 'Facebook',
-            items: 4,
+            amountItems: 4,
             price: 14482.49,
             seller: 'Fernanda Motta'
           },
           {
             quote: '0006',
             customer: 'Microsoft',
-            items: 12,
+            amountItems: 12,
             price: 97532.49,
             seller: 'Fernanda Motta'
           }

@@ -25,7 +25,7 @@
           </v-col>
           <v-col cols="12" sm="6" md="6">
             <v-text-field
-              v-model="quote.amoutItems"
+              v-model="quote.amountItems"
               label="Amount of Items"
               type="number"
               min="0"
@@ -33,24 +33,54 @@
           </v-col>
         </v-row>
 
-        <div v-if="quote.amoutItems.length">
-          <div class="py-2">Items</div>
-          <v-row v-for="(item, index) in Number(quote.amoutItems)" :key="index">
-            <v-col cols="12" sm="6" md="6">
-              <v-text-field
-                v-model="quote.itemList[index].width"
-                label="Width"
-                type="number"
-              />
-            </v-col>
-            <v-col cols="12" sm="6" md="6">
-              <v-text-field
-                v-model="quote.itemList[index].height"
-                label="Height"
-                type="number"
-              />
-            </v-col>
-          </v-row>
+        <div v-if="quote.amountItems.length">
+          <v-col 
+            v-for="(item, index) in Number(quote.amountItems)" 
+            :key="index"
+          >
+          <div class="py-2">Item {{ item }}</div>
+            <v-row>
+              <v-col cols="12" sm="12" md="12">
+                <v-text-field
+                  v-model="quote.itemList[index].name"
+                  label="Product Name"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                  v-model="quote.itemList[index].width"
+                  label="Width"
+                  type="number"
+                />
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                  v-model="quote.itemList[index].height"
+                  label="Height"
+                  type="number"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6" md="6">
+                <v-text-field
+                  v-model="quote.itemList[index].quantity"
+                  label="Quantity"
+                  type="number"
+                />
+              </v-col>
+              <v-col cols="12" sm="6" md="6">
+                <v-select
+                  v-model="quote.itemList[index].substrate"
+                  :items="substrateList"
+                  density="Substrate"
+                  label="Substrate"
+                ></v-select>
+              </v-col>
+            </v-row>
+          </v-col>
         </div>
       </v-container>
     </v-card-text>
@@ -79,23 +109,31 @@ export default {
       { text: "Fernanda Motta", id: 2 },
       { text: "Paulo Dallastra", id: 3 },
     ],
+    substrateList: [
+      { text: 'BOPP Metalizado', id: 1},
+      { text: 'BOPP Branco', id: 2},
+      { text: 'Couchê 20g', id: 3}
+    ],
     quote: {
       quote: "",
       customer: "",
-      amoutItems: 0,
+      amountItems: 0,
       price: 0,
       seller: "",
       itemList: [
         {
+          name: '',
           width: 0,
           height: 0,
+          quantity: 0,
+          substrate: ''
         },
       ],
     },
     defaultReset: {
       quote: "",
       customer: "",
-      amoutItems: 0,
+      amountItems: 0,
       price: 0,
       seller: "",
     },
@@ -114,20 +152,26 @@ export default {
   },
 
   watch: {
-    "quote.amoutItems": {
+    "quote.amountItems": {
       handler(newValue, oldValue) {
         if (newValue > 0) {
           if (newValue > oldValue && oldValue !== 0) {
             if (!this.quote.itemList[newValue])
               this.quote.itemList.push({
+                name: '',
                 width: 0,
                 height: 0,
+                quantity: 0,
+                substrate: ''
               });
           }
           if (oldValue > newValue && !this.closingModal) {
             this.quote.itemList[newValue] = {
+              name: '',
               width: 0,
               height: 0,
+              quantity: 0,
+              substrate: ''
             };
           }
 
@@ -138,9 +182,17 @@ export default {
   },
 
   methods: {
+    calcItemPrice(item) {
+      return ((item.width * item.height) / 1000) * (item.quantity / 10);
+    },
+
     save() {
       const lastQuoteAsNumber = Number(this.lastQuoteNumber);
       this.quote.quote = String(lastQuoteAsNumber + 1).padStart(4, "0");
+      for (let item of this.quote.itemList) {
+        item.price = this.calcItemPrice(item);
+        this.quote.price += item.price;
+      }
       this.$emit("save", this.quote);
       this.closingModal = true;
       this.quote = this.defaultReset;
